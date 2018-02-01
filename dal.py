@@ -79,7 +79,7 @@ class HashtagDatabaseConnection(object):
         AND rc.rc_timestamp BETWEEN ? AND ?
         ORDER BY rc.rc_timestamp DESC
         LIMIT ?, ?'''
-        params = (tag, lang, startdate, enddate, start, end)
+        params = (tag, lang, startdate, enddate+1, start, end)
         with tlog.critical('get_hashtags') as rec:
             ret = self.execute(query, params)
             rec.success('Fetched revisions tagged with {tag}',
@@ -116,7 +116,7 @@ class HashtagDatabaseConnection(object):
         AND rc.rc_timestamp BETWEEN ? AND ?
         ORDER BY rc.rc_id DESC
         LIMIT ?, ?''' % ', '.join(['?' for i in range(len(EXCLUDED))])
-        params = (lang,) + EXCLUDED + (startdate, enddate, start, end)
+        params = (lang,) + EXCLUDED + (startdate, enddate+1, start, end)
         with tlog.critical('get_all_hashtags') as rec:
             ret = self.execute(query, params)
             rec.success('Fetched all hashtags starting at {start}',
@@ -197,7 +197,7 @@ class HashtagDatabaseConnection(object):
         AND rc.htrc_lang LIKE ?
         AND rc.rc_timestamp BETWEEN ? AND ?
         ORDER BY rc.rc_id DESC'''
-        params = (tag, lang, startdate, enddate)
+        params = (tag, lang, startdate, enddate+1)
         with tlog.critical('get_hashtag_stats') as rec:
             ret = self.execute(query, params)
             rec.success('Fetched stats for {tag}',
@@ -226,7 +226,7 @@ class HashtagDatabaseConnection(object):
         AND ht.ht_text NOT IN(%s)
         AND ht.ht_text REGEXP '[[:alpha:]]+' ''' % ', '.join(['?' for i in range(len(EXCLUDED))])
         with tlog.critical('get_all_hashtag_stats') as rec:
-            ret = self.execute(query, (lang, startdate, enddate,) + EXCLUDED)
+            ret = self.execute(query, (lang, startdate, enddate+1,) + EXCLUDED)
             rec.success('Fetched all hashtag stats')
             return ret
 
