@@ -111,7 +111,7 @@ class HashtagDatabaseConnection(object):
         WHERE rc.rc_type = 0
         AND rc.htrc_lang LIKE ?
         AND ht.ht_text NOT IN(%s)
-        AND ht.ht_text REGEXP '[[:alpha:]]+'
+        AND ht.ht_text REGEXP '[\p{L}]+'
         AND CHAR_LENGTH(ht.ht_text) > 1
         AND rc.rc_timestamp BETWEEN ? AND ?
         ORDER BY rc.rc_id DESC
@@ -142,7 +142,7 @@ class HashtagDatabaseConnection(object):
                                       FROM   recentchanges) - ?
                JOIN hashtags AS ht
                  ON ht.ht_id = htrc.ht_id
-        WHERE  ht.ht_text REGEXP '[[:alpha:]]{1}[[:alnum:]]+'
+        WHERE  ht.ht_text REGEXP '[\p{L}]+{1}[\p{L}\p{N}]+'
         AND    ht.ht_text NOT IN (%s)
         %s
         GROUP  BY ht.ht_text
@@ -224,7 +224,7 @@ class HashtagDatabaseConnection(object):
         AND rc.htrc_lang LIKE ?
         AND rc.rc_timestamp BETWEEN ? AND ?
         AND ht.ht_text NOT IN(%s)
-        AND ht.ht_text REGEXP '[[:alpha:]]+' ''' % ', '.join(['?' for i in range(len(EXCLUDED))])
+        AND ht.ht_text REGEXP '[\p{L}]+' ''' % ', '.join(['?' for i in range(len(EXCLUDED))])
         with tlog.critical('get_all_hashtag_stats') as rec:
             ret = self.execute(query, (lang, startdate, enddate,) + EXCLUDED)
             rec.success('Fetched all hashtag stats')
